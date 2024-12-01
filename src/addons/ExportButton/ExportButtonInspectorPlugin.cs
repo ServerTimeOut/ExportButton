@@ -2,13 +2,16 @@ using System;
 using Godot;
 using System.Collections.Generic;
 using System.Reflection;
+using Godot.Collections;
+using Array = System.Array;
 
 public partial class ExportButtonInspectorPlugin : EditorInspectorPlugin
 {
-	private static readonly Dictionary<string, Type> ResPathCache = new();
-	private static readonly Dictionary<Type, ExportButtonMethodData[]> MethodCache = new();
+	private static readonly System.Collections.Generic.Dictionary<string, Type> ResPathCache = new();
+	private static readonly System.Collections.Generic.Dictionary<Type, ExportButtonMethodData[]> MethodCache = new();
 	
 	private Type _currentType;
+	string _previousProperty = null;
 	
 	public override bool _CanHandle(GodotObject @object)
 	{
@@ -28,22 +31,25 @@ public partial class ExportButtonInspectorPlugin : EditorInspectorPlugin
 		_currentType = null;
 		return false;		
 	}
-
-	public override void _ParseBegin(GodotObject @object) => AddExportButtons(@object, InspectorLocation.Begin);
-	public override void _ParseCategory(GodotObject @object, string category) => AddExportButtons(@object, InspectorLocation.Category, category);
-	public override void _ParseGroup(GodotObject @object, string group) => AddExportButtons(@object, InspectorLocation.Group, group);
-	public override void _ParseEnd(GodotObject @object) => AddExportButtons(@object, InspectorLocation.End);
 	
 
+	public override void _ParseBegin(GodotObject @object) => AddExportButtons(@object, InspectorLocation.Header);
+	public override void _ParseCategory(GodotObject @object, string category) => AddExportButtons(@object, InspectorLocation.Category, category);
+	public override void _ParseGroup(GodotObject @object, string group) => AddExportButtons(@object, InspectorLocation.Group, group);
+	public override void _ParseEnd(GodotObject @object) => AddExportButtons(@object, InspectorLocation.Footer);
+	
+
+	
+	
 	public override bool _ParseProperty(GodotObject @object, Variant.Type type, string name, PropertyHint hintType, string hintString,
 		PropertyUsageFlags usageFlags, bool wide)
 	{
 		AddExportButtons(@object, InspectorLocation.Property, name);
 		return base._ParseProperty(@object, type, name, hintType, hintString, usageFlags, wide);
 	}
-	
-	
-	
+
+
+
 	private bool TryGetScriptType(GodotObject obj, out Type type)
 	{
 		type = null;
@@ -96,10 +102,7 @@ public partial class ExportButtonInspectorPlugin : EditorInspectorPlugin
 			
 			InspectorLocationAttribute locationAttribute = methodInfo.GetCustomAttribute<InspectorLocationAttribute>();
 			if (locationAttribute != null) attribute.AddLocationAttribute(locationAttribute);
-			
-			ButtonPropertyNameAttribute buttonPropertyNameAttribute = methodInfo.GetCustomAttribute<ButtonPropertyNameAttribute>();
-			if (buttonPropertyNameAttribute != null) attribute.AddPropertyNameAttribute(buttonPropertyNameAttribute);
-			
+
 			
 			//check if the location is correct
 			if (attribute.LocationType == InspectorLocation.Category && string.IsNullOrEmpty(attribute.LocationName))
@@ -138,12 +141,7 @@ public partial class ExportButtonInspectorPlugin : EditorInspectorPlugin
 			ExportButton button = data.MethodInfo.IsStatic ? 
 				ExportButton.CreateStaticMethodButton(data.MethodInfo, data.Attribute.Text) : 
 				ExportButton.CreateInstanceMethodButton(@object, data.MethodInfo.Name, data.Attribute.Text);
-			
-			//get value of the disabled property
-			if (!string.IsNullOrEmpty(data.Attribute.ButtonPropertyName))
-			{
-				@object.Set(data.Attribute.ButtonPropertyName, button);
-			}
+			if (data.Attribute.TextSize != null) button.AddThemeFontSizeOverride("font_size", data.Attribute.TextSize!.Value);
 			
 			MarginContainer marginContainer = new MarginContainer();
 			marginContainer.AddThemeConstantOverride("margin_left", 4);

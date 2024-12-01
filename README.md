@@ -1,94 +1,163 @@
-# ExportButton
+# ExportButton c# Addon for Godot Engine
 
 ## Description
-A brief overview of what the project does, its purpose, and the key features.
+The ExportButton attribute in Godot allows you to add buttons to the Godot Inspector for enhanced editor usability. 
+These buttons can trigger specific methods directly from the editor.
 
 ## Table of Contents
 1. [Installation](#installation)
 2. [Usage](#usage)
-3. [Features](#features)
-4. [Contributing](#contributing)
-5. [License](#license)
-6. [Acknowledgements](#acknowledgements)
+3. [Example](#example)
+
 
 ---
 
 ## Installation
-### Prerequisites
-- List any dependencies, tools, or versions needed (e.g., Node.js, Python).
 
-### Steps
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/your-username/repo-name.git
-   cd repo-name
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the project:
-   ```bash
-   npm start
-   ```
+1. **Download the Plugin:**
+   - Clone or download the repository to your local machine.
+
+2. **Install the Plugin:**
+   - Place the `ExportButton` folder in your project's `res://addons/` directory.
+
+3. **Activate the Plugin:**
+   - Open the **Project Settings** in the Godot editor.
+   - Navigate to the **Plugins** tab.
+   - Find `ExportButton` in the list and set the status to **Active**.
 
 ---
 
 ## Usage
-### Example
-Provide an example of how to use the project or API.
 
-```bash
-# Example command
-node app.js --arg value
+### 1. Add the `[Tool]` Attribute to the Script  
+The script containing the methods with the `[ExportButton]` attribute must include the `[Tool]` attribute at the top. This ensures the script runs in the editor.  
+
+```csharp
+[Tool]
+public partial class MyScript : Node
+{
+    // Script logic here
+}
 ```
 
-### Screenshots (Optional)
-If applicable, include screenshots or GIFs:
-![Screenshot](path/to/screenshot.png)
-
 ---
 
-## Features
-- Feature 1: Brief description
-- Feature 2: Brief description
-- Feature 3: Brief description
+### 2. Annotate Methods with `[ExportButton]`
+Use the `[ExportButton]` attribute to add buttons to the inspector. These buttons trigger the associated methods.
 
----
-
-## Contributing
-Contributions are welcome! Follow these steps to contribute:
-1. Fork the repository.
-2. Create a new branch:
-   ```bash
-   git checkout -b feature-name
-   ```
-3. Commit changes:
-   ```bash
-   git commit -m "Add feature description"
-   ```
-4. Push to your branch:
-   ```bash
-   git push origin feature-name
-   ```
-5. Open a pull request.
-
-Refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file for more details.
-
----
-
-## License
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-## Acknowledgements
-- Thank key contributors or libraries you used.
-- Example: [Library Name](link), tutorials, or inspiration sources.
+```csharp
+[ExportButton("My Button")]
+public void MyButtonAction() => GD.Print("Button clicked!");
 ```
 
-### Explanation
-- **Clear Structure**: The template is modular, with logical sections for easy navigation.
-- **Markdown Features**: Leverages headings, lists, code blocks, and links for readability.
-- **Contributing Guidelines**: Includes a standard workflow for collaboration.
-- **License**: Placeholder for licensing information, which is essential for open-source projects.
+### 3. Customize Button Placement
+   Buttons can be positioned in specific locations in the inspector using the InspectorLocation enum:
+
+ - Header: Top of the inspector.
+ - Footer: Bottom of the inspector.
+ - Category: Top of a specified category.
+ - Group: Top of a specified group.
+ - Property: Above a specific property.
+Example: Adding a Button to a Category
+```csharp
+[ExportCategory("Character Stats")]
+[Export] public int Health = 100;
+
+[ExportButton("Heal Character", InspectorLocation.Category, "Character Stats")]
+public void HealCharacter() => Health = 100;
+
+//Or
+
+[ExportButton("Heal Character")]
+[InspectorLocationCategory("Character Stats")]
+public void HealCharacter() => Health = 100;
+```
+
+
+## Example
+
+```csharp
+using Godot;
+
+[Tool] // ExportButton must have the [Tool] attribute to work in the editor.
+public partial class Example : Node
+{
+    [ExportCategory("Character Stats")]
+    [Export] public int Health = 100;
+    [Export] public int Mana = 50;
+    [Export] public int Stamina = 75;
+
+    [ExportGroup("Inventory")]
+    [Export] public int Gold = 1000;
+    [Export] public int PotionCount = 5;
+
+    
+    
+    // Basic ExportButton usage, adds a button at the top of the inspector.
+    [ExportButton("Print Debug Info")]
+    private void OnPrintDebugInfoBtnPressed() => GD.Print($"Health: {Health}, Mana: {Mana}, Stamina: {Stamina}, Gold: {Gold}, Potions: {PotionCount}");
+    
+    
+    
+    // ExportButton with a specific location: this button appears in the "Character Stats" category.
+    [ExportButton("Heal Character", InspectorLocation.Category, "Character Stats")]
+    private void OnHealCharacterBtnPressed() => Health = Mana = Stamina = 100;
+    
+   
+
+    // ExportButton placed under the "Character Stats" category using ExportButtonLocationCategory attribute.
+    [ExportButton("Cast Spell")]
+    [InspectorLocationCategory("Character Stats")]
+    private void OnCastSpellBtnPressed()
+    {
+        if (Mana >= 10)
+            GD.Print("Cast a spell! Mana left: ", Mana -= 10);
+        else
+            GD.Print("Not enough mana to cast a spell!");
+    }
+    
+    
+    // ExportButton linked to a specific property: this button appears above "Mana" in the inspector.
+    [ExportButton("Drink Potion", InspectorLocation.Property, nameof(Mana))]
+    private void OnDrinkPotionBtnPressed()
+    {
+        if (PotionCount-- > 0)
+        {
+            Health = Mathf.Min(Health + 20, 100);
+            GD.Print("Drank a potion! Health: ", Health, ", Potions left: ", PotionCount);
+        }
+        else
+            GD.Print("No potions left!");
+    }
+    
+    
+    // ExportButton appears under the "Inventory" group in the inspector.
+    [ExportButton("Add Gold", InspectorLocation.Group, "Inventory")]
+    private void OnAddGoldBtnPressed() => Gold += 50;
+    
+
+
+    
+    // Appears at the very end of the inspector.
+    [ExportButton("Reset Stats", InspectorLocation.Footer)]
+    private void OnResetStatsBtnPressed()
+    {
+        Health = 100;
+        Mana = 50;
+        Stamina = 75;
+        Gold = 1000;
+        PotionCount = 5;
+    }
+    
+
+    public override void _Ready()
+    {
+        if (Engine.IsEditorHint())
+            return; // Exit early if running in the editor
+    }
+}
+```
+
+![alt text](ExampleInspector.JPG "Example Inspector")
+
+``

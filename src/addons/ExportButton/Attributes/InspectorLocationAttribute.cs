@@ -12,16 +12,16 @@ public class InspectorLocationAttribute : Attribute
         LocationType = location;
         LocationName = locationName;
         
-        if (LocationType == InspectorLocation.Begin || LocationType == InspectorLocation.End) LocationName = null;
+        if (LocationType == InspectorLocation.Header || LocationType == InspectorLocation.Footer) LocationName = null;
     }
 }
 
 
 
 
-public class InspectorLocationBeginAttribute : InspectorLocationAttribute
+public class InspectorLocationHeaderAttribute : InspectorLocationAttribute
 {
-    public InspectorLocationBeginAttribute() : base(InspectorLocation.Begin) { }
+    public InspectorLocationHeaderAttribute() : base(InspectorLocation.Header) { }
 }
 
 public class InspectorLocationCategoryAttribute : InspectorLocationAttribute
@@ -34,19 +34,13 @@ public class InspectorLocationGroupAttribute : InspectorLocationAttribute
     public InspectorLocationGroupAttribute(string name) : base(InspectorLocation.Group, name) { }
 }
 
-public class InspectorLocationLocationEndAttribute : InspectorLocationAttribute
+public class InspectorLocationPropertyAttribute : InspectorLocationAttribute
 {
-    public InspectorLocationLocationEndAttribute() : base(InspectorLocation.End) { }
+    public InspectorLocationPropertyAttribute(string name) : base(InspectorLocation.Property, name) { }
 }
 
 
-[AttributeUsage(AttributeTargets.Method)]
-public class ButtonPropertyNameAttribute : Attribute
+public class InspectorLocationLocationEndAttribute : InspectorLocationAttribute
 {
-    public string Name { get; }
-    
-    public ButtonPropertyNameAttribute(string name)
-    {
-        Name = name;
-    }
+    public InspectorLocationLocationEndAttribute() : base(InspectorLocation.Footer) { }
 }

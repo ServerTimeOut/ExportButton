@@ -25,20 +25,16 @@ public partial class Example : Node
     private void OnHealCharacterBtnPressed() => Health = Mana = Stamina = 100;
     
    
-    private Button CastSpellBtn;
+
     // ExportButton placed under the "Character Stats" category using ExportButtonLocationCategory attribute.
     [ExportButton("Cast Spell")]
     [InspectorLocationCategory("Character Stats")]
-    [ButtonPropertyName(nameof(CastSpellBtn))]
     private void OnCastSpellBtnPressed()
     {
         if (Mana >= 10)
             GD.Print("Cast a spell! Mana left: ", Mana -= 10);
         else
             GD.Print("Not enough mana to cast a spell!");
-        
-        if (CastSpellBtn != null && IsInstanceValid(CastSpellBtn) && !CastSpellBtn.IsQueuedForDeletion())
-            CastSpellBtn.Disabled = Mana < 10;
     }
     
     
@@ -64,7 +60,7 @@ public partial class Example : Node
 
     
     // Appears at the very end of the inspector.
-    [ExportButton("Reset Stats", InspectorLocation.End)]
+    [ExportButton("Reset Stats", InspectorLocation.Footer)]
     private void OnResetStatsBtnPressed()
     {
         Health = 100;
