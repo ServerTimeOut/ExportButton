@@ -27,7 +27,7 @@ These buttons can trigger specific methods directly from the editor.
 
 ---
 
-## Usage
+## Getting started
 
 ### 1. Add the `[Tool]` Attribute to the Script  
 The script containing the methods with the `[ExportButton]` attribute must include the `[Tool]` attribute at the top. This ensures the script runs in the editor.  
@@ -157,7 +157,6 @@ public partial class Example : Node
     }
 }
 ```
-
+### Inspector Preview
 ![alt text](ExampleInspector.JPG "Example Inspector")
 
-``
