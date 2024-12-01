@@ -1,4 +1,4 @@
-public enum InspectorLocation
+public enum InspectorLocationType
 {
     Header,
     Footer,

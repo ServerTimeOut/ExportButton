@@ -21,7 +21,7 @@ public partial class Example : Node
     
     
     // ExportButton with a specific location: this button appears in the "Character Stats" category.
-    [ExportButton("Heal Character", InspectorLocation.Category, "Character Stats")]
+    [ExportButton("Heal Character", InspectorLocationType.Category, "Character Stats")]
     private void OnHealCharacterBtnPressed() => Health = Mana = Stamina = 100;
     
    
@@ -39,7 +39,7 @@ public partial class Example : Node
     
     
     // ExportButton linked to a specific property: this button appears above "Mana" in the inspector.
-    [ExportButton("Drink Potion", InspectorLocation.Property, nameof(Mana))]
+    [ExportButton("Drink Potion", InspectorLocationType.Property, nameof(Mana))]
     private void OnDrinkPotionBtnPressed()
     {
         if (PotionCount-- > 0)
@@ -53,14 +53,14 @@ public partial class Example : Node
     
     
     // ExportButton appears under the "Inventory" group in the inspector.
-    [ExportButton("Add Gold", InspectorLocation.Group, "Inventory")]
+    [ExportButton("Add Gold", InspectorLocationType.Group, "Inventory")]
     private void OnAddGoldBtnPressed() => Gold += 50;
     
 
 
     
     // Appears at the very end of the inspector.
-    [ExportButton("Reset Stats", InspectorLocation.Footer)]
+    [ExportButton("Reset Stats", InspectorLocationType.Footer)]
     private void OnResetStatsBtnPressed()
     {
         Health = 100;

@@ -2,38 +2,24 @@ using System;
 using Godot;
 
 [AttributeUsage(AttributeTargets.Method)]
-public class ExportButtonAttribute : Attribute
+public class ExportButtonAttribute : BaseCustomExportAttribute
 {
-    public string Text { get; } = null;
-    public int? TextSize { get; } = null;
+    public ExportTextInfo Info { get; private set; }
     
-    public InspectorLocation LocationType { get; private set; } = InspectorLocation.Header;
-    public string LocationName { get; private set; }
-
-
 
     public ExportButtonAttribute(string text)
     {
-        Text = text;
+        Info =new (text);
     }
-    public ExportButtonAttribute(string text, InspectorLocation location, string locationName = null)
+    public ExportButtonAttribute(string text, InspectorLocationType location)
     {
-        Text = text;
-        LocationType = location;
-        LocationName = locationName;
-
-        if (LocationType is InspectorLocation.Header or InspectorLocation.Footer && LocationName != null)
-        {
-            GD.PushWarning($"ExportButtonAttribute: [{Text}] Header and Footer locations do not require a LocationName.");
-            LocationName = null;
-        }
-            
+        Info =new (text);
+        AddLocation(location);
     }
     
-    
-    public void AddLocationAttribute(InspectorLocationAttribute locationAttribute)
+    public ExportButtonAttribute(string text, InspectorLocationType locationType, String locationName)
     {
-        LocationType = locationAttribute.LocationType;
-        LocationName = locationAttribute.LocationName;
+        Info =new (text);
+        AddLocation(locationType, locationName);
     }
 }

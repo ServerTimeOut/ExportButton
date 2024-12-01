@@ -6,6 +6,7 @@ using System;
 public partial class ExportButtonPlugin : EditorPlugin
 {
 	private ExportButtonInspectorPlugin _exportButtonInspectorPlugin;
+	
 	public override void _EnterTree()
 	{
 		_exportButtonInspectorPlugin = new ExportButtonInspectorPlugin();

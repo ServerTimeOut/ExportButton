@@ -9,7 +9,7 @@ public partial class PlacementExample : Node
     [Export] public int MyProperty = 0;
     
     // Add button to category
-    [ExportButton("My Button", InspectorLocation.Category, "My Category") ]
+    [ExportButton("My Button", InspectorLocationType.Category, "My Category") ]
     public void OnMyButtonPressed() => GD.Print($"Button clicked {MyProperty++} times!");
     
     //Or 
